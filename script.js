@@ -55,66 +55,29 @@ const convertRelative = (rates, from, to, base = "EUR") => {
 }
 
 
-// Get the first element matching "selector"
-const $ = (selector, context = window.document) => {
-  return context.querySelector(selector);
-}
-
-
-// An array of elements matching "selector"
-const $$ = (selector, context = window.document) => {
-  return Array.from(context.querySelectorAll(selector));
-}
-
-
-// Create a new element, eg. createElement("a", { href: "/", innerHTML: "foo" })
-const createElement = (tag, properties) => {
-  const element = window.document.createElement(tag);
-  Object.assign(element, properties);
-  return element;
-}
-
-
-// Add one ore more event handlers to one ore more events (string separated by
-// whitespace) to one or more elements, eg. on(myDiv, "click keydown", doStuff)
-// or on([ myInput, mySelect ], "change", doStuff, doOtherStuff)
-const on = (elements, events, ...handlers) => {
-  if (!Array.isArray(elements)) {
-    return on([ elements ], events, ...handlers);
-  }
-  events = events.split(/\s+/);
-  for (const element of elements) {
-    for (const event of events) {
-      for (const handler of handlers) {
-        element.addEventListener(event, handler);
-      }
-    }
-  }
-}
+// DOM elements
+const hamburgerButton      = document.querySelector(".header__hamburger a");
+const swStatus             = document.querySelector(".swstatus");
+const overlay              = document.querySelector(".overlay");
+const travelCurrencyInput  = document.querySelector(".currency__select--travel");
+const homeCurrencyInput    = document.querySelector(".currency__select--home");
+const travelAmountInput    = document.querySelector(".amount__input--travel");
+const travelCurrencyOutput = document.querySelector(".amount__currency--travel");
+const homeAmountOutput     = document.querySelector(".amount__output--home");
+const homeCurrencyOutput   = document.querySelector(".amount__currency--home");
+const refreshButton        = document.querySelector(".refresh");
+const notificationCheckbox = document.querySelector(".notifications");
 
 
 // Create option elements for the select elements from the currencies
 const createOptionElements = (currencies) => {
-  return Array.from(currencies)
-    .map( ([ code, { name } ]) => createElement("option", {
-      innerHTML: `${name} (${code})`,
-      value: code,
-    }) );
+  return Array.from(currencies, ([ code, { name } ]) => {
+    const element = document.createElement("option");
+    element.innerHTML = `${name} (${code})`;
+    element.value = code;
+    return element;
+  });
 }
-
-
-// DOM elements
-const hamburgerButton      = $(".header__hamburger a");
-const swStatus             = $(".swstatus");
-const overlay              = $(".overlay");
-const travelCurrencyInput  = $(".currency__select--travel");
-const homeCurrencyInput    = $(".currency__select--home");
-const travelAmountInput    = $(".amount__input--travel");
-const travelCurrencyOutput = $(".amount__currency--travel");
-const homeAmountOutput     = $(".amount__output--home");
-const homeCurrencyOutput   = $(".amount__currency--home");
-const refreshButton        = $(".refresh");
-const notificationCheckbox = $(".notifications");
 
 
 // Populate select elements
@@ -138,22 +101,22 @@ const closeSidebar = () => {
   sidebarOpened = false;
 }
 
-on(hamburgerButton, "click", () => {
+hamburgerButton.addEventListener("click", () => {
   (sidebarOpened) ? closeSidebar() : openSidebar();
 });
 
-on(overlay, "click", () => {
+overlay.addEventListener("click", () => {
   (sidebarOpened) ? closeSidebar() : null;
 });
 
-
-// load exchange rates
-const getRates = async ({ refresh = false }) => {
-  const response = await fetch("api/latest.json");
-  if (!response.ok) {
-    throw new Error(`Request failed with status code ${ response.staus }`)
-  }
-  return await response.json();
+// Detect either the absence of the service worker API or a web page that's not
+// served from a secure or local origin
+if (!window.navigator.serviceWorker || !window.navigator.serviceWorker.ready) {
+  const { host, protocol } = window.location;
+  const reason = (host.startsWith("localhost") === false || protocol !== "https:")
+    ? `The web page is not secure or served from a non-localhost origin.`
+    : `You appear to be using an ancient browser.`;
+  throw new Error(`Service Worker API non-functional! ${ reason }`);
 }
 
 
@@ -161,7 +124,3 @@ const getRates = async ({ refresh = false }) => {
 // Your code goes here! (and maybe into a service worker?)
 // =======================================================
 
-
-// Delay this line to only display the app when it has been initialized, eg.
-// when rates have loaded
-document.body.classList.add("loaded");
