@@ -61,6 +61,29 @@ input:focus, select:focus {
   outline: none;
 }
 
+input[type="checkbox"] + .text {
+  display: inline-block;
+  transform: translateX(-1em);
+  transition: all var(--transition-time);
+}
+input[type="checkbox"] + .text::before {
+  content: " « ";
+  color: var(--accent);
+  font-weight: bold;
+  position: relative;
+  top: -2px;
+  opacity: 0;
+  transition: all var(--transition-time);
+}
+input[type="checkbox"]:focus + .text,
+input[type="checkbox"]:hover + .text {
+  transform: translateX(0);
+}
+input[type="checkbox"]:focus + .text::before,
+input[type="checkbox"]:hover + .text::before {
+  opacity: 1;
+}
+
 label.disabled span.text,
 label.not-supported span.text {
   text-decoration: line-through;
@@ -74,6 +97,29 @@ label.not-supported::after {
   content: "Notifications are not supported";
   display: block;
   font-size: 0.6em;
+}
+
+.install {
+  background: var(--dark);
+  color: #FFF;
+  box-shadow: var(--box-shadow);
+  border: 2px solid var(--border-color);
+  padding: 0.5em 1em;
+  font-weight: bold;
+}
+.install:focus {
+  box-shadow: var(--box-shadow), 0 0 0.333em var(--accent);
+  outline: none;
+}
+.install__icon {
+  font-weight: bold;
+  margin-right: 0.75em;
+}
+.install:disabled {
+  color: #CCC;
+}
+.install--inactive {
+  display: none;
 }
 
 .container {
@@ -183,10 +229,12 @@ label.not-supported::after {
     z-index: 1;
     margin: 0;
     width: 320px;
-    transition: transform var(--transition-time);
+    transition: transform var(--transition-time),
+                box-shadow var(--transition-time);
   }
   body:not(.sidebarOpened) .sidebar {
     transform: translateX(-100%);
+    box-shadow: none;
   }
 }
 
@@ -220,6 +268,7 @@ label.not-supported::after {
   border-bottom-color: transparent;
   background: var(--accent);
   color: #FFF;
+  outline: 1px solid var(--accent);
 }
 
 
@@ -267,12 +316,7 @@ body:not(.sidebarOpened) .overlay {
   border: 0.1rem solid var(--border-color);
   box-shadow: var(--box-shadow);
   position: relative;
-  opacity: 0;
   transition: opacity var(--transition-time);
-}
-
-body.loaded .main {
-  opacity: 1;
 }
 
 .currency {

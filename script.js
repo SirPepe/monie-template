@@ -57,6 +57,7 @@ const convertRelative = (rates, from, to, base = "EUR") => {
 
 // DOM elements
 const hamburgerButton      = document.querySelector(".header__hamburger a");
+const installButton        = document.querySelector(".install");
 const swStatus             = document.querySelector(".swstatus");
 const overlay              = document.querySelector(".overlay");
 const travelCurrencyInput  = document.querySelector(".currency__select--travel");
